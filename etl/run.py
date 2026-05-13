@@ -14,7 +14,6 @@ def Load(df):
     final_df = df.toPandas()
     final_df.to_csv(f"{_env['DATA_LAKE_PATH']}/guardrails_inputs/guardrails_inputs.csv")
     print('Done')
-    exit()
 
 def extract(_env):
     # Extraction Part
@@ -56,34 +55,3 @@ if __name__ == "__main__":
     _env = GetEnv.get_env_variables()
     os.environ["HF_TOKEN"] = _env['HF_TOKEN']
     extract(_env)
-    exit()
-
-    
-    # Transformation begin here
-    bad_df['original_sample'] = (
-        bad_df['original_sample']
-        .str.replace('ChatGPT', 'tiki-taka-bot', regex=False)
-        .str.replace('chatGPT', 'tiki-taka-bot', regex=False)
-    )
-    bad_df['label'] = '1'
-
-    final_bad_df = bad_df.rename(
-        columns = {
-            "original_sample" : "text"
-        }
-    ).drop(columns=['modified_sample', 'attack_name'])
-    
-
-    good_df = good_df_raw[(good_df_raw['lang'] == 'en') & (good_df_raw['role'] == 'prompter')][['text']]
-    good_df['label'] = '0'
-
-    good_df.reset_index(drop=True)
-
-    # tain_df = df.iloc[0:7524][['original_sample', 'label']]
-
-    # test_df = df.iloc[7524:][['original_sample', 'label']]
-
-    # Loading part
-    final_bad_df.to_csv(f"{_env['DATA_LAKE_PATH']}/guardrails_inputs/bad/guardrails_bad_inputs.csv")
-    good_df.to_csv(f"{_env['DATA_LAKE_PATH']}/guardrails_inputs/good/guardrails_good_inputs.csv")
-    print('Done')

@@ -1,6 +1,7 @@
 import pandas as pd
 import time
 from helpers.GetEnv import GetEnv
+import joblib
 
 def train_with_logistic_regression(**kwargs):
 
@@ -14,6 +15,8 @@ def train_with_logistic_regression(**kwargs):
     df = kwargs['df']
     _env = kwargs['_env']
     mode = 'train_all' if kwargs.get('mode') is not None and kwargs.get('mode') != 'dev' else 'dev'
+    model_path = f"{_env['DATA_LAKE_PATH']}/model/lg_ip_guardrails.pkl"
+    vectorizer_path = f"{_env['DATA_LAKE_PATH']}/model/vectorizer.pkl"
 
     train_count = round((70/100)*len(df))
     test_count = len(df)-train_count
@@ -45,6 +48,9 @@ def train_with_logistic_regression(**kwargs):
 
     clf = LogisticRegression(max_iter=10000, random_state=0)
     clf.fit(X_train, y_train)
+
+    joblib.dump(clf, model_path)
+    joblib.dump(vectorizer, vectorizer_path)
 
     if mode == 'dev':
         # Prediction on dataset
